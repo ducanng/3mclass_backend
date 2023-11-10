@@ -11,3 +11,6 @@
 2023-11-10T04:16:06.307+0700	ERROR	authhandler/auth_handler.go:85	error while validating user and password, err: user existed
 2023-11-10T04:16:06.307+0700	ERROR	http/server.go:2136	Failed to register user, err=user existed
 2023-11-10T22:09:26.265+0700	FATAL	app/app.go:56	Not able to start Application.
+2023-11-10T22:11:09.665+0700	ERROR	userservice/user_service.go:38	Error while finding user, err: record not found
+2023-11-10T22:11:09.665+0700	ERROR	authhandler/auth_handler.go:85	error while validating user and password, err: user existed
+2023-11-10T22:11:09.666+0700	ERROR	http/server.go:2136	Failed to register user, err=user existed
