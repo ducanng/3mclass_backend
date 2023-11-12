@@ -1,0 +1,172 @@
+basePath: /
+definitions:
+  authhandler.RefreshTokenResponse:
+    type: object
+  authhandler.UserLoginRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  authhandler.UserLoginResponse:
+    type: object
+  authhandler.UserRegistrationRequest:
+    properties:
+      display_name:
+        type: string
+      email:
+        type: string
+      first_name:
+        type: string
+      last_name:
+        type: string
+      password:
+        type: string
+      phone_number:
+        maxLength: 12
+        minLength: 9
+        type: string
+      re_password:
+        type: string
+    required:
+    - email
+    - password
+    - phone_number
+    - re_password
+    type: object
+  authhandler.UserRegistrationResponse:
+    properties:
+      email:
+        type: string
+      message:
+        description: WaitingResendOTPSeconds uint64 `json:"waiting_resend_otp_seconds"`
+        type: string
+      next_action:
+        type: string
+      phone_number:
+        type: string
+      session:
+        type: string
+    type: object
+  authhandler.VerifyOTPRequest:
+    type: object
+  authhandler.VerifyOTPResponse:
+    type: object
+host: localhost:8080
+info:
+  contact:
+    name: API Support
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: NoName API
+  version: "1.0"
+paths:
+  /v1/public/auth/login:
+    post:
+      consumes:
+      - application/json
+      description: User login by phone or email
+      parameters:
+      - description: Request
+        in: body
+        name: UserLoginRequest
+        required: true
+        schema:
+          $ref: '#/definitions/authhandler.UserLoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/authhandler.UserLoginResponse'
+      summary: User login by phone or email
+      tags:
+      - Public/Auth
+  /v1/public/auth/refresh_token:
+    get:
+      consumes:
+      - application/json
+      description: Refresh Token
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/authhandler.RefreshTokenResponse'
+      summary: Refresh Token
+      tags:
+      - Public/Auth
+  /v1/public/auth/registration:
+    post:
+      consumes:
+      - application/json
+      description: User registration by phone, email, display name
+      parameters:
+      - description: Request
+        in: body
+        name: UserRegistrationRequest
+        required: true
+        schema:
+          $ref: '#/definitions/authhandler.UserRegistrationRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/authhandler.UserRegistrationResponse'
+      summary: User registration by phone, email, display name
+      tags:
+      - Public/Auth
+  /v1/public/auth/verify_otp:
+    post:
+      consumes:
+      - application/json
+      description: Verify OTP
+      parameters:
+      - description: Request
+        in: body
+        name: VerifyOTPRequest
+        required: true
+        schema:
+          $ref: '#/definitions/authhandler.VerifyOTPRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/authhandler.VerifyOTPResponse'
+      summary: Verify OTP
+      tags:
+      - Public/Auth
+  /v1/public/u/user/logout:
+    post:
+      consumes:
+      - application/json
+      description: Logout user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Logout ok!
+          schema:
+            type: string
+      summary: Logout user
+      tags:
+      - Public/Auth
+schemes:
+- http
+- https
+securityDefinitions:
+  BearerAuth:
+    description: Type "Bearer" followed by a space and JWT token.
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
