@@ -4,7 +4,6 @@ import (
 	"bytes"
 	_ "embed"
 	"log"
-	"time"
 
 	"github.com/spf13/viper"
 )
@@ -33,10 +32,10 @@ type (
 		AllowCredentials bool     `mapstructure:"allow_credentials"`
 	}
 	jwt struct {
-		ExpiryTime time.Duration `mapstructure:"expiry_time"`
-		PrivateKey string        `mapstructure:"private_key"`
-		PublicKey  string        `mapstructure:"public_key"`
-		Enabled    bool          `mapstructure:"enabled"`
+		ExpiryTime int64  `mapstructure:"expiry_time"`
+		PrivateKey string `mapstructure:"private_key"`
+		PublicKey  string `mapstructure:"public_key"`
+		Enabled    bool   `mapstructure:"enabled"`
 	}
 	accessTokenCookie struct {
 		Domain         string `mapstructure:"domain"`

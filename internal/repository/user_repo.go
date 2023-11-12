@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"errors"
 
 	"gorm.io/gorm"
 
@@ -11,8 +12,8 @@ import (
 type UserRepository interface {
 	CreateUser(ctx context.Context, user *userdm.User) (*userdm.User, error)
 	CreateUserCredential(ctx context.Context, userCredential *userdm.UserCredential) (*userdm.UserCredential, error)
-	GetExistingUserByID(ctx context.Context, userID uint64) (user *userdm.User, err error)
-	GetExistingUserByEmail(ctx context.Context, email string) (*userdm.User, error)
+	GetExistingUserByID(ctx context.Context, userID uint64) (user *userdm.User, isFound bool, err error)
+	GetExistingUserByEmail(ctx context.Context, email string) (*userdm.User, bool, error)
 }
 
 type userRepository struct {
@@ -35,18 +36,24 @@ func (u *userRepository) CreateUserCredential(ctx context.Context, userCredentia
 	return userCredential, err
 }
 
-func (u *userRepository) GetExistingUserByID(ctx context.Context, userID uint64) (user *userdm.User, err error) {
+func (u *userRepository) GetExistingUserByID(ctx context.Context, userID uint64) (user *userdm.User, isFound bool, err error) {
 	err = u.DB.WithContext(ctx).Model(&userdm.User{}).Where("user_id = ?", userID).First(&user).Error
-	if err != nil {
-		return nil, err
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, false, nil
 	}
-	return user, nil
+	if err != nil {
+		return nil, false, err
+	}
+	return user, true, nil
 }
 
-func (u *userRepository) GetExistingUserByEmail(ctx context.Context, email string) (user *userdm.User, err error) {
+func (u *userRepository) GetExistingUserByEmail(ctx context.Context, email string) (user *userdm.User, isFound bool, err error) {
 	err = u.DB.WithContext(ctx).Model(&userdm.User{}).Where("user_email = ?", email).First(&user).Error
-	if err != nil {
-		return nil, err
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, false, nil
 	}
-	return user, nil
+	if err != nil {
+		return nil, false, err
+	}
+	return user, true, nil
 }

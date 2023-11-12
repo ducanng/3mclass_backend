@@ -9,21 +9,21 @@ import (
 )
 
 type Handler interface {
-	Register(r *chi.Mux)
+	Register(r chi.Router)
 }
 
 type HandlerAggregator interface {
 	RegisterAll()
-	AddHandler(Handler, *chi.Mux)
+	AddHandler(Handler, chi.Router)
 }
 
 type handlerAggregator struct {
-	handlerMap map[Handler]*chi.Mux
+	handlerMap map[Handler]chi.Router
 }
 
 func NewHandlerAggregator() HandlerAggregator {
 	return &handlerAggregator{
-		handlerMap: make(map[Handler]*chi.Mux),
+		handlerMap: make(map[Handler]chi.Router),
 	}
 }
 
@@ -33,7 +33,7 @@ func (ha *handlerAggregator) RegisterAll() {
 	}
 }
 
-func (ha *handlerAggregator) AddHandler(h Handler, r *chi.Mux) {
+func (ha *handlerAggregator) AddHandler(h Handler, r chi.Router) {
 	ha.handlerMap[h] = r
 }
 

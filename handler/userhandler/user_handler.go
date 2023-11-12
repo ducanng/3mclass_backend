@@ -1,9 +1,11 @@
 package userhandler
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/go-chi/chi"
+	"github.com/go-chi/jwtauth/v5"
 	"github.com/go-playground/validator/v10"
 
 	"github.com/ducanng/no-name/config"
@@ -29,14 +31,11 @@ func NewUserHandler(cfg *config.Config, service userservice.UserService, jwtHelp
 	}
 }
 
-func (h *userHandler) Register(r *chi.Mux) {
-	r.Route("/v1/public/user", func(r chi.Router) {
-		r.Post("/logout", h.logoutUser)
-		r.Post("/change_password", h.changePassword)
-		r.Post("/update_profile", h.updateProfile)
-		r.Get("/profile", h.updateProfile)
-
-	})
+func (h *userHandler) Register(r chi.Router) {
+	r.Post("/logout", h.logoutUser)
+	r.Post("/change_password", h.changePassword)
+	r.Post("/update_profile", h.updateProfile)
+	r.Get("/profile", h.updateProfile)
 }
 
 // logoutUser godoc
@@ -49,11 +48,12 @@ func (h *userHandler) Register(r *chi.Mux) {
 //	@Success		200	{string}	string	"Logout ok!"
 //	@Router			/v1/public/u/user/logout [post]
 func (h *userHandler) logoutUser(w http.ResponseWriter, r *http.Request) {
+	_, claims, _ := jwtauth.FromContext(r.Context())
 	// handle logout
 	var domain = h.cfg.AccessTokenCookie.Domain
 	// TODO: check domain
 	deleteAccessToken(w, []string{h.cfg.AccessTokenCookie.CookieName}, domain, false)
-	httputil.WriteJSONMessage(w, http.StatusOK, "Logout ok!")
+	httputil.WriteJSONMessage(w, http.StatusOK, fmt.Sprintf("logout OK! %v", claims["user_id"]))
 }
 
 func (h *userHandler) changePassword(w http.ResponseWriter, r *http.Request) {
@@ -79,7 +79,7 @@ func deleteAccessToken(w http.ResponseWriter, cookieNames []string, domain strin
 		return
 	}
 	http.SetCookie(w, &http.Cookie{
-		Name:     "access_token",
+		Name:     "jwt",
 		Value:    "",
 		HttpOnly: true,
 		Path:     "/",

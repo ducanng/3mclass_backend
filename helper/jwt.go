@@ -2,6 +2,7 @@ package helper
 
 import (
 	"context"
+	"net/http"
 	"time"
 
 	"github.com/go-chi/jwtauth/v5"
@@ -13,6 +14,7 @@ type (
 	JWTHelper interface {
 		IssueToken(ctx context.Context, claims JWTClaims) (string, error)
 		VerifyToken(ctx context.Context, token string) (JWTClaims, error)
+		Verifier() func(http.Handler) http.Handler
 	}
 	jwtHelper struct {
 		jwtauth.JWTAuth
@@ -52,4 +54,7 @@ func (j *jwtHelper) VerifyToken(ctx context.Context, token string) (JWTClaims, e
 		return nil, err
 	}
 	return claims, nil
+}
+func (j *jwtHelper) Verifier() func(http.Handler) http.Handler {
+	return jwtauth.Verifier(&j.JWTAuth)
 }

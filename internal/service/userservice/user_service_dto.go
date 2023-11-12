@@ -2,15 +2,15 @@ package userservice
 
 type (
 	UserRegistrationRequest struct {
-		Email              string
-		PhoneNumber        string
-		DisplayName        string
-		FirstName          string
-		LastName           string
-		Password           string
-		RePassword         string
-		PhoneCountryCode   string
-		CountryCallingCode string
+		Email       string
+		PhoneNumber string
+		DisplayName string
+		FirstName   string
+		LastName    string
+		Password    string
+		RePassword  string
+		// PhoneCountryCode   string
+		// CountryCallingCode string
 	}
 
 	UserRegistrationResponse struct {

@@ -8,6 +8,8 @@ type (
 		DisplayName string `json:"display_name"`
 		FirstName   string `json:"first_name"`
 		LastName    string `json:"last_name"`
+		RePassword  string `json:"re_password" validate:"required"`
+
 		//PhoneCountryCode   string `json:"phone_country_code" validate:"required"`
 		//CountryCallingCode string `json:"country_calling_code" validate:"required"`
 	}

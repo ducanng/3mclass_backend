@@ -1,3 +1,4 @@
+basePath: /
 definitions:
   authhandler.RefreshTokenResponse:
     type: object
@@ -26,10 +27,13 @@ definitions:
         maxLength: 12
         minLength: 9
         type: string
+      re_password:
+        type: string
     required:
     - email
     - password
     - phone_number
+    - re_password
     type: object
   authhandler.UserRegistrationResponse:
     properties:
@@ -49,8 +53,16 @@ definitions:
     type: object
   authhandler.VerifyOTPResponse:
     type: object
+host: localhost:8080
 info:
-  contact: {}
+  contact:
+    name: API Support
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: NoName API
+  version: "1.0"
 paths:
   /v1/public/auth/login:
     post:
@@ -148,4 +160,13 @@ paths:
       summary: Logout user
       tags:
       - Public/Auth
+schemes:
+- http
+- https
+securityDefinitions:
+  BearerAuth:
+    description: Type "Bearer" followed by a space and JWT token.
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

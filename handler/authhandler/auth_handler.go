@@ -34,13 +34,11 @@ func NewAuthHandler(cfg *config.Config, service userservice.UserService, jwtHelp
 	}
 }
 
-func (a *authHandler) Register(r *chi.Mux) {
-	r.Route("/v1/public/auth", func(r chi.Router) {
-		r.Post("/registration", a.userRegistration)
-		r.Post("/login", a.userLogin)
-		r.Get("/refresh_token", a.refreshToken)
-		r.Post("/verify_otp", a.verifyOTP)
-	})
+func (a *authHandler) Register(r chi.Router) {
+	r.Post("/registration", a.userRegistration)
+	r.Post("/login", a.userLogin)
+	r.Get("/refresh_token", a.refreshToken)
+	r.Post("/verify_otp", a.verifyOTP)
 }
 
 // userRegistration godoc
@@ -89,6 +87,7 @@ func (a *authHandler) userRegistration(w http.ResponseWriter, r *http.Request) {
 		FirstName:   req.FirstName,
 		LastName:    req.LastName,
 		Password:    req.Password,
+		RePassword:  req.RePassword,
 	})
 	if err != nil {
 		logger.Errorf("Failed to register user, err=%s", err.Error())
@@ -153,12 +152,13 @@ func (a *authHandler) userLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var (
-		expireAt time.Time = time.Now().Add(time.Hour * 24 * 365)
+		expireAt = time.Now().Add(time.Hour * 24 * 365)
 	)
 	if a.cfg.JWT.ExpiryTime > 0 {
 		expireAt = time.Now().Add(time.Second * time.Duration(a.cfg.JWT.ExpiryTime))
 	}
 	var domain = a.cfg.AccessTokenCookie.Domain
+	w.Header().Set("Authorization", "BEARER"+token)
 	http.SetCookie(w, &http.Cookie{
 		Name:     a.cfg.AccessTokenCookie.CookieName,
 		Value:    token,
@@ -188,10 +188,11 @@ func (a *authHandler) userLogin(w http.ResponseWriter, r *http.Request) {
 			MaxAge:   -1,
 		})
 	}
+	httputil.WriteJSONMessage(w, http.StatusOK, "Ok!")
 }
 func deleteAccessToken(w http.ResponseWriter, domain string) {
 	http.SetCookie(w, &http.Cookie{
-		Name:     "access_token",
+		Name:     "jwt",
 		Value:    "",
 		HttpOnly: true,
 		Path:     "/",

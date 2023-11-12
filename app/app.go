@@ -153,24 +153,32 @@ func (a *App) InitializeServer() *http.Server {
 
 func (a *App) InitializeRoutes() {
 	publicKey, privateKey := getJWTKey(a.cfg.JWT.PublicKey, a.cfg.JWT.PrivateKey)
-	jwt := jwtauth.New(string(jwa.HS256), privateKey, publicKey)
-	jwtHelper := helper.NewJWTHelper(*jwt, a.cfg.JWT.ExpiryTime)
-	a.Router.Use(jwtauth.Verifier(jwt))
+	jwt := jwtauth.New(string(jwa.RS256), privateKey, publicKey)
+	jwtHelper := helper.NewJWTHelper(*jwt, time.Duration(a.cfg.JWT.ExpiryTime))
+
 	a.Router.Get("/", handler.IndexHandler)
 	//a.Router.Get("/swagger/*", httpSwagger.WrapHandler)
 	// Serve Swagger UI files statically
 	a.Router.Handle("/docs/*", http.StripPrefix("/docs/", http.FileServer(http.Dir("docs"))))
 	a.Router.Get("/swagger/*", httpSwagger.Handler(
-		httpSwagger.URL("/docs/swagger.json"),
+		httpSwagger.URL("/docs/swagger.yaml"),
 	))
+
 	userRepo := repository.NewUserRepository(a.DB)
 	userService := userservice.NewUserService(a.cfg, userRepo)
 	a.authHandler = authhandler.NewAuthHandler(a.cfg, userService, jwtHelper)
 	a.userHandler = userhandler.NewUserHandler(a.cfg, userService, jwtHelper)
-	a.authHandler.Register(a.Router)
+
+	a.Router.Route("/v1/public/auth", func(r chi.Router) {
+		a.authHandler.Register(r)
+	})
 	a.Router.Group(func(r chi.Router) {
+		r.Use(jwtHelper.Verifier())
 		r.Use(jwtauth.Authenticator)
-		a.userHandler.Register(a.Router)
+		r.Route("/v1/public/u/user", func(r chi.Router) {
+			a.userHandler.Register(r)
+		})
+
 	})
 }
 

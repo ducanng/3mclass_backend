@@ -9,7 +9,14 @@ const docTemplate = `{
     "info": {
         "description": "{{escape .Description}}",
         "title": "{{.Title}}",
-        "contact": {},
+        "termsOfService": "http://swagger.io/terms/",
+        "contact": {
+            "name": "API Support"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        },
         "version": "{{.Version}}"
     },
     "host": "{{.Host}}",
@@ -187,7 +194,8 @@ const docTemplate = `{
             "required": [
                 "email",
                 "password",
-                "phone_number"
+                "phone_number",
+                "re_password"
             ],
             "properties": {
                 "display_name": {
@@ -209,6 +217,9 @@ const docTemplate = `{
                     "type": "string",
                     "maxLength": 12,
                     "minLength": 9
+                },
+                "re_password": {
+                    "type": "string"
                 }
             }
         },
@@ -239,16 +250,24 @@ const docTemplate = `{
         "authhandler.VerifyOTPResponse": {
             "type": "object"
         }
+    },
+    "securityDefinitions": {
+        "BearerAuth": {
+            "description": "Type \"Bearer\" followed by a space and JWT token.",
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
     }
 }`
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "",
-	Host:             "",
-	BasePath:         "",
-	Schemes:          []string{},
-	Title:            "",
+	Version:          "1.0",
+	Host:             "localhost:8080",
+	BasePath:         "/",
+	Schemes:          []string{"http", "https"},
+	Title:            "NoName API",
 	Description:      "",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,

@@ -69,13 +69,20 @@ func (u *userService) RegisterUser(ctx context.Context, req *UserRegistrationReq
 
 func (u *userService) validateUserAndPassword(ctx context.Context, email string, password string, rePassword string) (userData *userdm.User, err error) {
 	var (
-		logger = logutil.GetLogger()
+		logger  = logutil.GetLogger()
+		isFound bool
 	)
-	if userData, err = u.repo.GetExistingUserByEmail(ctx, email); err != nil {
-		logger.Errorf("Error while finding user, err: %s", err.Error())
-		return userData, errors.New("user existed")
+	userData, isFound, err = u.repo.GetExistingUserByEmail(ctx, email)
+	if err != nil {
+		errMsg := fmt.Sprintf("Error while getting user by email, err: %s", err.Error())
+		logger.Errorf(errMsg)
+		return userData, errors.New(errMsg)
 	}
-
+	if isFound {
+		errMsg := fmt.Sprintf("User existed with email: %s", email)
+		logger.Error(errMsg)
+		return userData, errors.New(errMsg)
+	}
 	if password != rePassword {
 		errMsg := fmt.Sprint("password and repeated password are not matched")
 		logger.Error(errMsg)
@@ -88,13 +95,21 @@ func (u *userService) UserLogin(ctx context.Context, loginReq UserLogin) (user *
 	var (
 		logger   = logutil.GetLogger()
 		userData *userdm.User
+		isFound  bool
 	)
-	if userData, err = u.repo.GetExistingUserByEmail(ctx, loginReq.Email); err != nil {
-		logger.Errorf("Not found account, err: %s", err.Error())
-		return nil, errors.New("user not existed")
+	userData, isFound, err = u.repo.GetExistingUserByEmail(ctx, loginReq.Email)
+	if err != nil {
+		errMsg := fmt.Sprintf("Error while getting user by email, err: %s", err.Error())
+		logger.Errorf(errMsg)
+		return user, errors.New(errMsg)
 	}
-	if loginReq.Password != userData.Password {
-		logger.Errorf("password not matched")
+	if !isFound {
+		errMsg := fmt.Sprintf("User not existed with email: %s", loginReq.Email)
+		logger.Error(errMsg)
+		return user, errors.New(errMsg)
+	}
+	if err = bcrypt.CompareHashAndPassword([]byte(userData.Password), []byte(loginReq.Password)); err != nil {
+		logger.Errorf("password not matched, err: %s", err.Error())
 		return nil, errors.New("password not matched")
 	}
 	user = &UserInfo{

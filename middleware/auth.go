@@ -4,6 +4,8 @@ import (
 	"context"
 	"net/http"
 
+	"github.com/go-chi/jwtauth/v5"
+
 	"github.com/ducanng/no-name/config"
 	"github.com/ducanng/no-name/helper"
 )
@@ -32,18 +34,17 @@ func NewAuthMiddleware(cfg *config.Config, jwtHelper helper.JWTHelper) AuthMiddl
 
 func (a *authMiddleware) Handle(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-
-		claims, err := a.jwtHelper.VerifyToken(r.Context(), r.Header.Get("Authorization"))
+		authorization := jwtauth.TokenFromCookie(r)
+		if authorization == "" {
+			authorization = jwtauth.TokenFromHeader(r)
+		}
+		claims, err := a.jwtHelper.VerifyToken(r.Context(), authorization)
 		if err != nil {
 			// Invalid access token
 			deleteAccessToken(w, a.cfg.AccessTokenCookie.Domain, a.cfg.AccessTokenCookie.PreviousDomain)
 			http.Error(w, "Unauthorized", http.StatusUnauthorized)
 			return
 		}
-
-		// Kiểm tra quyền truy cập nếu cần
-		// ...
-
 		ctx := context.WithValue(r.Context(), "user_id", claims["user_id"])
 
 		h.ServeHTTP(w, r.WithContext(ctx))
@@ -52,7 +53,7 @@ func (a *authMiddleware) Handle(h http.Handler) http.Handler {
 
 func deleteAccessToken(w http.ResponseWriter, domain, previousDomain string) {
 	http.SetCookie(w, &http.Cookie{
-		Name:     "access_token",
+		Name:     "jwt",
 		Value:    "",
 		HttpOnly: true,
 		Path:     "/",
@@ -75,7 +76,7 @@ func deleteAccessToken(w http.ResponseWriter, domain, previousDomain string) {
 
 	if previousDomain != "" {
 		http.SetCookie(w, &http.Cookie{
-			Name:     "access_token",
+			Name:     "jwt",
 			Value:    "",
 			HttpOnly: true,
 			Path:     "/",
@@ -96,7 +97,7 @@ func deleteAccessToken(w http.ResponseWriter, domain, previousDomain string) {
 		})
 	}
 	http.SetCookie(w, &http.Cookie{
-		Name:     "access_token",
+		Name:     "jwt",
 		Value:    "",
 		HttpOnly: true,
 		Path:     "/",

@@ -17,6 +17,6 @@ jwt:
   expiry_time: -1
 access_token_cookie:
   domain:
-  cookie_name: access_token
+  cookie_name: jwt
   previous_domain:
 secret_key: keynaykhongcoaibiethetne

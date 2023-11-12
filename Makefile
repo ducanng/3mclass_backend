@@ -1,3 +1,3 @@
 generate:
-	swag init -o ./api --ot go,yaml -d ./
-	swag fmt ./api
+	swag init --ot go,yaml -d ./
+	swag fmt

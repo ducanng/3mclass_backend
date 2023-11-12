@@ -25,6 +25,7 @@ import (
 //	@description				Type "Bearer" followed by a space and JWT token.
 
 // @BasePath	/
+
 func main() {
 	logutil.InitLog()
 	logger := logutil.GetLogger()

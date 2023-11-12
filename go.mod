@@ -4,6 +4,7 @@ go 1.21.0
 
 require (
 	github.com/go-chi/chi v4.1.2+incompatible
+	github.com/go-chi/chi/v5 v5.0.7
 	github.com/go-chi/jwtauth/v5 v5.1.1
 	github.com/go-playground/validator/v10 v10.16.0
 	github.com/lestrrat-go/jwx/v2 v2.0.16
