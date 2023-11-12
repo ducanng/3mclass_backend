@@ -20,6 +20,6 @@ all:
 	make run
 deploy:
 	make clean
-	make generate
 	make dep
+	make generate
 	make build_deploy
