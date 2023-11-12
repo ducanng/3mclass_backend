@@ -120,6 +120,7 @@ func (a *authHandler) userLogin(w http.ResponseWriter, r *http.Request) {
 	)
 	err := json.NewDecoder(r.Body).Decode(&loginReq)
 	if err != nil {
+		deleteAccessToken(w, a.cfg.AccessTokenCookie.Domain)
 		deleteAccessToken(w, "")
 		httputil.WriteJSONMessage(w, http.StatusBadRequest, err.Error())
 		return
@@ -127,6 +128,7 @@ func (a *authHandler) userLogin(w http.ResponseWriter, r *http.Request) {
 
 	err = a.validate.Struct(loginReq)
 	if err != nil {
+		deleteAccessToken(w, a.cfg.AccessTokenCookie.Domain)
 		deleteAccessToken(w, "")
 		httputil.WriteJSONMessage(w, http.StatusBadRequest, err.Error())
 		return
@@ -137,6 +139,7 @@ func (a *authHandler) userLogin(w http.ResponseWriter, r *http.Request) {
 		Password: loginReq.Password,
 	})
 	if err != nil {
+		deleteAccessToken(w, a.cfg.AccessTokenCookie.Domain)
 		deleteAccessToken(w, "")
 		httputil.WriteJSONMessage(w, http.StatusBadRequest, err.Error())
 		return
@@ -147,6 +150,7 @@ func (a *authHandler) userLogin(w http.ResponseWriter, r *http.Request) {
 		"user_id": userInfo.UserID,
 	})
 	if err != nil {
+		deleteAccessToken(w, a.cfg.AccessTokenCookie.Domain)
 		deleteAccessToken(w, "")
 		httputil.WriteJSONMessage(w, http.StatusBadRequest, err.Error())
 		return
