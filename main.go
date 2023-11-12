@@ -6,6 +6,8 @@ import (
 	"github.com/ducanng/no-name/app"
 	"github.com/ducanng/no-name/config"
 	"github.com/ducanng/no-name/pkg/logutil"
+
+	_ "github.com/swaggo/http-swagger/example/go-chi/docs"
 )
 
 //	@title		NoName API

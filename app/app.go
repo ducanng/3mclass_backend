@@ -56,6 +56,7 @@ func (a *App) InitializeApp() {
 	a.InitializeDBConn()
 	a.Router = chi.NewRouter()
 	a.Router.Use(middleware.Logger)
+	a.Router.Use(middleware.Recoverer)
 	a.InitializeRoutes()
 }
 
@@ -157,12 +158,12 @@ func (a *App) InitializeRoutes() {
 	jwtHelper := helper.NewJWTHelper(*jwt, time.Duration(a.cfg.JWT.ExpiryTime))
 
 	a.Router.Get("/", handler.IndexHandler)
-	//a.Router.Get("/swagger/*", httpSwagger.WrapHandler)
+	a.Router.Get("/swagger/*", a.handlerForSwagger())
 	// Serve Swagger UI files statically
-	a.Router.Handle("/docs/*", http.StripPrefix("/docs/", http.FileServer(http.Dir("docs"))))
-	a.Router.Get("/swagger/*", httpSwagger.Handler(
-		httpSwagger.URL("/docs/swagger.yaml"),
-	))
+	//a.Router.Handle("/docs/*", http.StripPrefix("/docs/", http.FileServer(http.Dir("docs"))))
+	//a.Router.Get("/swagger/*", httpSwagger.Handler(
+	//	httpSwagger.URL("/docs/swagger.yaml"),
+	//))
 
 	userRepo := repository.NewUserRepository(a.DB)
 	userService := userservice.NewUserService(a.cfg, userRepo)
@@ -206,4 +207,12 @@ func getJWTKey(publicKeyStr, privateKeyStr string) (publicKey *rsa.PublicKey, pr
 	}
 	publicKey = genericPublicKeyInf.(*rsa.PublicKey)
 	return publicKey, privateKey
+}
+
+func (a *App) handlerForSwagger() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// TODO: improve the flag with trusted ips in the future
+		httpSwagger.WrapHandler(w, r)
+		return
+	}
 }
