@@ -5,9 +5,8 @@ type (
 		Password    string `json:"password" validate:"required"`
 		Email       string `json:"email" validate:"required,email"`
 		PhoneNumber string `json:"phone_number" validate:"min=9,max=12,required,numeric"`
-		DisplayName string `json:"display_name"`
-		FirstName   string `json:"first_name"`
-		LastName    string `json:"last_name"`
+		FirstName   string `json:"first_name" validate:"required"`
+		LastName    string `json:"last_name" validate:"required"`
 		RePassword  string `json:"re_password" validate:"required"`
 
 		//PhoneCountryCode   string `json:"phone_country_code" validate:"required"`
@@ -25,14 +24,10 @@ type (
 		Email    string `json:"email"`
 		Password string `json:"password"`
 	}
-	UserLoginResponse struct {
-	}
+
 	RefreshTokenRequest struct {
 	}
-	RefreshTokenResponse struct {
-	}
+
 	VerifyOTPRequest struct {
-	}
-	VerifyOTPResponse struct {
 	}
 )

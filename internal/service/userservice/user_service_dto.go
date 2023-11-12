@@ -4,7 +4,6 @@ type (
 	UserRegistrationRequest struct {
 		Email       string
 		PhoneNumber string
-		DisplayName string
 		FirstName   string
 		LastName    string
 		Password    string
@@ -29,5 +28,21 @@ type (
 	UserInfo struct {
 		UserName string
 		UserID   uint64
+	}
+
+	UserProfile struct {
+		UserID      uint64
+		FirstName   string
+		LastName    string
+		Email       string
+		PhoneNumber string
+		DisplayName string
+	}
+
+	UpdateUserProfileRequest struct {
+		Email       string
+		FirstName   string
+		LastName    string
+		PhoneNumber string
 	}
 )

@@ -14,6 +14,7 @@ type UserRepository interface {
 	CreateUserCredential(ctx context.Context, userCredential *userdm.UserCredential) (*userdm.UserCredential, error)
 	GetExistingUserByID(ctx context.Context, userID uint64) (user *userdm.User, isFound bool, err error)
 	GetExistingUserByEmail(ctx context.Context, email string) (*userdm.User, bool, error)
+	UpdateUser(ctx context.Context, data *userdm.User) error
 }
 
 type userRepository struct {
@@ -56,4 +57,8 @@ func (u *userRepository) GetExistingUserByEmail(ctx context.Context, email strin
 		return nil, false, err
 	}
 	return user, true, nil
+}
+
+func (u *userRepository) UpdateUser(ctx context.Context, data *userdm.User) error {
+	return u.DB.WithContext(ctx).Model(&userdm.User{}).Where("user_id = ?", data.UserID).Updates(data).Error
 }

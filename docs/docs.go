@@ -48,9 +48,9 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "Login ok!",
                         "schema": {
-                            "$ref": "#/definitions/authhandler.UserLoginResponse"
+                            "type": "string"
                         }
                     }
                 }
@@ -71,9 +71,9 @@ const docTemplate = `{
                 "summary": "Refresh Token",
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "Ok!",
                         "schema": {
-                            "$ref": "#/definitions/authhandler.RefreshTokenResponse"
+                            "type": "string"
                         }
                     }
                 }
@@ -139,9 +139,9 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "Ok!",
                         "schema": {
-                            "$ref": "#/definitions/authhandler.VerifyOTPResponse"
+                            "type": "string"
                         }
                     }
                 }
@@ -157,7 +157,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Public/Auth"
+                    "Public/User"
                 ],
                 "summary": "Logout user",
                 "responses": {
@@ -169,12 +169,66 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/v1/public/u/user/profile": {
+            "get": {
+                "description": "Get user profile",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Public/User"
+                ],
+                "summary": "Get user profile",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/userhandler.UserProfile"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/public/u/user/update_profile": {
+            "post": {
+                "description": "Update user profile",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Public/User"
+                ],
+                "summary": "Update user profile",
+                "parameters": [
+                    {
+                        "description": "Request",
+                        "name": "UserProfile",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/userhandler.UpdateUserProfileRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Update profile ok!",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
-        "authhandler.RefreshTokenResponse": {
-            "type": "object"
-        },
         "authhandler.UserLoginRequest": {
             "type": "object",
             "properties": {
@@ -186,21 +240,17 @@ const docTemplate = `{
                 }
             }
         },
-        "authhandler.UserLoginResponse": {
-            "type": "object"
-        },
         "authhandler.UserRegistrationRequest": {
             "type": "object",
             "required": [
                 "email",
+                "first_name",
+                "last_name",
                 "password",
                 "phone_number",
                 "re_password"
             ],
             "properties": {
-                "display_name": {
-                    "type": "string"
-                },
                 "email": {
                     "type": "string"
                 },
@@ -247,8 +297,45 @@ const docTemplate = `{
         "authhandler.VerifyOTPRequest": {
             "type": "object"
         },
-        "authhandler.VerifyOTPResponse": {
-            "type": "object"
+        "userhandler.UpdateUserProfileRequest": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "first_name": {
+                    "type": "string"
+                },
+                "last_name": {
+                    "type": "string"
+                },
+                "phone_number": {
+                    "type": "string"
+                }
+            }
+        },
+        "userhandler.UserProfile": {
+            "type": "object",
+            "properties": {
+                "display_name": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "first_name": {
+                    "type": "string"
+                },
+                "last_name": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "integer"
+                }
+            }
         }
     },
     "securityDefinitions": {

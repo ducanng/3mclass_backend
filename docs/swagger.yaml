@@ -1,7 +1,5 @@
 basePath: /
 definitions:
-  authhandler.RefreshTokenResponse:
-    type: object
   authhandler.UserLoginRequest:
     properties:
       email:
@@ -9,12 +7,8 @@ definitions:
       password:
         type: string
     type: object
-  authhandler.UserLoginResponse:
-    type: object
   authhandler.UserRegistrationRequest:
     properties:
-      display_name:
-        type: string
       email:
         type: string
       first_name:
@@ -31,6 +25,8 @@ definitions:
         type: string
     required:
     - email
+    - first_name
+    - last_name
     - password
     - phone_number
     - re_password
@@ -51,7 +47,31 @@ definitions:
     type: object
   authhandler.VerifyOTPRequest:
     type: object
-  authhandler.VerifyOTPResponse:
+  userhandler.UpdateUserProfileRequest:
+    properties:
+      email:
+        type: string
+      first_name:
+        type: string
+      last_name:
+        type: string
+      phone_number:
+        type: string
+    type: object
+  userhandler.UserProfile:
+    properties:
+      display_name:
+        type: string
+      email:
+        type: string
+      first_name:
+        type: string
+      last_name:
+        type: string
+      phone:
+        type: string
+      user_id:
+        type: integer
     type: object
 host: localhost:8080
 info:
@@ -80,9 +100,9 @@ paths:
       - application/json
       responses:
         "200":
-          description: OK
+          description: Login ok!
           schema:
-            $ref: '#/definitions/authhandler.UserLoginResponse'
+            type: string
       summary: User login by phone or email
       tags:
       - Public/Auth
@@ -95,9 +115,9 @@ paths:
       - application/json
       responses:
         "200":
-          description: OK
+          description: Ok!
           schema:
-            $ref: '#/definitions/authhandler.RefreshTokenResponse'
+            type: string
       summary: Refresh Token
       tags:
       - Public/Auth
@@ -139,9 +159,9 @@ paths:
       - application/json
       responses:
         "200":
-          description: OK
+          description: Ok!
           schema:
-            $ref: '#/definitions/authhandler.VerifyOTPResponse'
+            type: string
       summary: Verify OTP
       tags:
       - Public/Auth
@@ -159,7 +179,44 @@ paths:
             type: string
       summary: Logout user
       tags:
-      - Public/Auth
+      - Public/User
+  /v1/public/u/user/profile:
+    get:
+      consumes:
+      - application/json
+      description: Get user profile
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/userhandler.UserProfile'
+      summary: Get user profile
+      tags:
+      - Public/User
+  /v1/public/u/user/update_profile:
+    post:
+      consumes:
+      - application/json
+      description: Update user profile
+      parameters:
+      - description: Request
+        in: body
+        name: UserProfile
+        required: true
+        schema:
+          $ref: '#/definitions/userhandler.UpdateUserProfileRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Update profile ok!
+          schema:
+            type: string
+      summary: Update user profile
+      tags:
+      - Public/User
 schemes:
 - http
 - https

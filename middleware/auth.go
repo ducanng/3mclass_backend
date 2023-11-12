@@ -45,7 +45,7 @@ func (a *authMiddleware) Handle(h http.Handler) http.Handler {
 			http.Error(w, "Unauthorized", http.StatusUnauthorized)
 			return
 		}
-		ctx := context.WithValue(r.Context(), "user_id", claims["user_id"])
+		ctx := context.WithValue(r.Context(), "user_id", claims["user_id"].(uint64))
 
 		h.ServeHTTP(w, r.WithContext(ctx))
 	})

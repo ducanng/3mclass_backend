@@ -83,7 +83,6 @@ func (a *authHandler) userRegistration(w http.ResponseWriter, r *http.Request) {
 	respRegistration, err := a.UserService.RegisterUser(r.Context(), &userservice.UserRegistrationRequest{
 		Email:       req.Email,
 		PhoneNumber: req.PhoneNumber,
-		DisplayName: req.DisplayName,
 		FirstName:   req.FirstName,
 		LastName:    req.LastName,
 		Password:    req.Password,
@@ -112,7 +111,9 @@ func (a *authHandler) userRegistration(w http.ResponseWriter, r *http.Request) {
 //	@Accept			json
 //	@Produce		json
 //	@Param			UserLoginRequest	body		UserLoginRequest	true	"Request"
-//	@Success		200					{object}	UserLoginResponse
+//
+//	@Success		200					{string}	string				"Login ok!"
+//
 //	@Router			/v1/public/auth/login [post]
 func (a *authHandler) userLogin(w http.ResponseWriter, r *http.Request) {
 	var (
@@ -221,10 +222,12 @@ func deleteAccessToken(w http.ResponseWriter, domain string) {
 //	@Accept			json
 //	@Produce		json
 //	@Param			RefreshTokenRequest	query		RefreshTokenRequest	true	"Request"
-//	@Success		200					{object}	RefreshTokenResponse
+//
+//	@Success		200					{string}	string				"Ok!"
+//
 //	@Router			/v1/public/auth/refresh_token [get]
 func (a *authHandler) refreshToken(w http.ResponseWriter, r *http.Request) {
-	httputil.WriteJSONMessage(w, http.StatusNotImplemented, "Ok!")
+	httputil.WriteJSONMessage(w, http.StatusNotImplemented, "Login ok!")
 }
 
 // verifyOTP godoc
@@ -235,7 +238,9 @@ func (a *authHandler) refreshToken(w http.ResponseWriter, r *http.Request) {
 //	@Accept			json
 //	@Produce		json
 //	@Param			VerifyOTPRequest	body		VerifyOTPRequest	true	"Request"
-//	@Success		200					{object}	VerifyOTPResponse
+//
+//	@Success		200					{string}	string				"Ok!"
+//
 //	@Router			/v1/public/auth/verify_otp [post]
 func (a *authHandler) verifyOTP(w http.ResponseWriter, r *http.Request) {
 	httputil.WriteJSONMessage(w, http.StatusNotImplemented, "Ok!")

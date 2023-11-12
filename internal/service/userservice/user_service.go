@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"net/mail"
 
 	"golang.org/x/crypto/bcrypt"
 
@@ -16,6 +17,8 @@ import (
 type UserService interface {
 	RegisterUser(ctx context.Context, req *UserRegistrationRequest) (*UserRegistrationResponse, error)
 	UserLogin(ctx context.Context, login UserLogin) (*UserInfo, error)
+	GetUserInfo(ctx context.Context, userID uint64) (*UserProfile, error)
+	UpdateUserProfile(ctx context.Context, userID uint64, req *UpdateUserProfileRequest) error
 }
 
 type userService struct {
@@ -30,12 +33,12 @@ func NewUserService(cfg *config.Config, repo repository.UserRepository) UserServ
 	}
 }
 
-func (u *userService) RegisterUser(ctx context.Context, req *UserRegistrationRequest) (resp *UserRegistrationResponse, err error) {
+func (s *userService) RegisterUser(ctx context.Context, req *UserRegistrationRequest) (resp *UserRegistrationResponse, err error) {
 	var (
 		logger   = logutil.GetLogger()
 		userData *userdm.User
 	)
-	if userData, err = u.validateUserAndPassword(ctx, req.Email, req.Password, req.RePassword); err != nil {
+	if userData, err = s.validateUserAndPassword(ctx, req.Email, req.Password, req.RePassword); err != nil {
 		logger.Errorf("error while validating user and password, err: %s", err.Error())
 		return nil, err
 	}
@@ -45,9 +48,11 @@ func (u *userService) RegisterUser(ctx context.Context, req *UserRegistrationReq
 		return nil, err
 	}
 
-	userData, err = u.repo.CreateUser(ctx, &userdm.User{
+	userData, err = s.repo.CreateUser(ctx, &userdm.User{
 		UserEmail:    req.Email,
-		DisplayName:  req.DisplayName,
+		DisplayName:  fmt.Sprintf("%s %s", req.FirstName, req.LastName),
+		FirstName:    req.LastName,
+		LastName:     req.FirstName,
 		PhoneNumber:  req.PhoneNumber,
 		Password:     string(encryptedPassword),
 		ActiveStatus: true,
@@ -67,12 +72,12 @@ func (u *userService) RegisterUser(ctx context.Context, req *UserRegistrationReq
 	}, err
 }
 
-func (u *userService) validateUserAndPassword(ctx context.Context, email string, password string, rePassword string) (userData *userdm.User, err error) {
+func (s *userService) validateUserAndPassword(ctx context.Context, email string, password string, rePassword string) (userData *userdm.User, err error) {
 	var (
 		logger  = logutil.GetLogger()
 		isFound bool
 	)
-	userData, isFound, err = u.repo.GetExistingUserByEmail(ctx, email)
+	userData, isFound, err = s.repo.GetExistingUserByEmail(ctx, email)
 	if err != nil {
 		errMsg := fmt.Sprintf("Error while getting user by email, err: %s", err.Error())
 		logger.Errorf(errMsg)
@@ -91,13 +96,13 @@ func (u *userService) validateUserAndPassword(ctx context.Context, email string,
 	return userData, nil
 }
 
-func (u *userService) UserLogin(ctx context.Context, loginReq UserLogin) (user *UserInfo, err error) {
+func (s *userService) UserLogin(ctx context.Context, loginReq UserLogin) (user *UserInfo, err error) {
 	var (
 		logger   = logutil.GetLogger()
 		userData *userdm.User
 		isFound  bool
 	)
-	userData, isFound, err = u.repo.GetExistingUserByEmail(ctx, loginReq.Email)
+	userData, isFound, err = s.repo.GetExistingUserByEmail(ctx, loginReq.Email)
 	if err != nil {
 		errMsg := fmt.Sprintf("Error while getting user by email, err: %s", err.Error())
 		logger.Errorf(errMsg)
@@ -117,4 +122,69 @@ func (u *userService) UserLogin(ctx context.Context, loginReq UserLogin) (user *
 		UserID:   userData.UserID,
 	}
 	return user, nil
+}
+
+func (s *userService) GetUserInfo(ctx context.Context, userID uint64) (user *UserProfile, err error) {
+	var (
+		logger   = logutil.GetLogger()
+		userData *userdm.User
+		isFound  bool
+	)
+	userData, isFound, err = s.repo.GetExistingUserByID(ctx, userID)
+	if err != nil {
+		logger.Errorf("error while getting user by id, err: %s", err.Error())
+		return nil, err
+	}
+	if !isFound {
+		logger.Errorf("user not found with id: %d", userID)
+		return nil, errors.New("user not found")
+	}
+	user = &UserProfile{
+		UserID:      userData.UserID,
+		FirstName:   userData.FirstName,
+		LastName:    userData.LastName,
+		Email:       userData.UserEmail,
+		PhoneNumber: userData.PhoneNumber,
+		DisplayName: userData.DisplayName,
+	}
+	return user, nil
+}
+
+func (s *userService) UpdateUserProfile(ctx context.Context, userID uint64, req *UpdateUserProfileRequest) (err error) {
+	var (
+		logger   = logutil.GetLogger()
+		userData *userdm.User
+		isFound  bool
+	)
+	userData, isFound, err = s.repo.GetExistingUserByID(ctx, userID)
+	if err != nil {
+		logger.Errorf("error while getting user by id, err: %s", err.Error())
+		return err
+	}
+	if !isFound {
+		logger.Errorf("user not found with id: %d", userID)
+		return errors.New("user not found")
+	}
+	if req.Email != "" {
+		if _, err = mail.ParseAddress(req.Email); err != nil {
+			logger.Errorf("Invalid input email %s, err:%s ", req.Email, err)
+			return err
+		}
+		userData.UserEmail = req.Email
+	}
+	if req.PhoneNumber != "" {
+		userData.PhoneNumber = req.PhoneNumber
+	}
+	if req.FirstName != "" {
+		userData.FirstName = req.FirstName
+	}
+	if req.LastName != "" {
+		userData.LastName = req.LastName
+	}
+	userData.DisplayName = fmt.Sprintf("%s %s", userData.FirstName, userData.LastName)
+	if err = s.repo.UpdateUser(ctx, userData); err != nil {
+		logger.Errorf("error while updating user, err: %s", err.Error())
+		return err
+	}
+	return nil
 }

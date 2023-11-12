@@ -8,9 +8,12 @@ import (
 
 type (
 	User struct {
-		UserID       uint64 `gorm:"primaryKey;autoIncrement" json:"user_id"`
-		UserEmail    string `gorm:"type:varchar(64);not null;unique" json:"user_email"`
-		DisplayName  string `gorm:"type:varchar(64)" json:"display_name"`
+		UserID      uint64 `gorm:"primaryKey;autoIncrement" json:"user_id"`
+		UserEmail   string `gorm:"type:varchar(64);not null;unique" json:"user_email"`
+		DisplayName string `gorm:"type:varchar(64)" json:"display_name"`
+		FirstName   string `gorm:"type:varchar(64)" json:"first_name"`
+		LastName    string `gorm:"type:varchar(64)" json:"last_name"`
+
 		PhoneNumber  string `gorm:"type:varchar(64);not null;unique" json:"phone_number"`
 		Password     string `gorm:"varchar(100);not null" json:"password"`
 		ActiveStatus bool   `gorm:"type:bool;default:true" json:"active_status"`
