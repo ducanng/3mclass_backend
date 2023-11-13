@@ -1,7 +1,9 @@
 {
+  "version": 2,
   "build": {
     "env": {
-      "GO_BUILD_FLAGS": "-ldflags '-s -w'"
+      "GO_BUILD_FLAGS": "-ldflags '-s -w'",
+      "GIT_CREDENTIALS": "https://ducanng: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@github.com"
     }
   }
 }
