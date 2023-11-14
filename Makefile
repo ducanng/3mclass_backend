@@ -11,7 +11,7 @@ generate:
 	swag init --ot go,yaml -d ./
 	swag fmt
 clean:
-	rm -rf !(functions)
+	rm -rf ./functions
 all:
 	make clean
 	make generate
