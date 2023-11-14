@@ -4,7 +4,7 @@ dep:
 build:
 	go build -v -o ./bin/main .
 build_deploy:
-	CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o functions/main .
+	go build -o functions/hello-lambda ./...
 run:
 	./bin/main
 generate:
