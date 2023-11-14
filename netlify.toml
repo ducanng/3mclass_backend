@@ -5,4 +5,3 @@
   # Change this path with the path to your repository
   GO_IMPORT_PATH="github.com/ducanng/no-name"
   GO111MODULE="on"
-  GOBIN="/opt/build/repo/functions"
