@@ -1,6 +1,7 @@
 [build]
   command = "make deploy"
-  publish = "bin/main"
+  functions = "functions"
+  publish = "./"
 [build.environment]
   # Change this path with the path to your repository
   GO_IMPORT_PATH = "github.com/ducanng/no-name"
