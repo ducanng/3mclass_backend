@@ -4,7 +4,7 @@ dep:
 build:
 	go build -v -o ./bin/main .
 build_deploy:
-	go build -o functions/hello-lambda ./...
+	go build -o functions/no-name ./...
 run:
 	./bin/main
 generate:
