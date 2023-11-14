@@ -20,7 +20,6 @@ all:
 	make run
 deploy:
 	make clean
-	make dep
 	go get ./...
 	go install ./...
 	make build_deploy
