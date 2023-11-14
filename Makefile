@@ -4,7 +4,7 @@ dep:
 build:
 	go build -v -o ./bin/main .
 build_deploy:
-	go build -o functions/no-name ./...
+	go build -o functions/main ./...
 run:
 	./bin/main
 generate:
