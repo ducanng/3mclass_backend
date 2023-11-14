@@ -55,6 +55,8 @@ func (a *App) InitializeApp() {
 	logger.Infof("Initializing DB conection...")
 	a.InitializeDBConn()
 	a.Router = chi.NewRouter()
+	a.Router.Use(middleware.RequestID)
+	a.Router.Use(middleware.RealIP)
 	a.Router.Use(middleware.Logger)
 	a.Router.Use(middleware.Recoverer)
 	a.InitializeRoutes()
