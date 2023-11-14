@@ -160,12 +160,12 @@ func (a *App) InitializeRoutes() {
 	jwtHelper := helper.NewJWTHelper(*jwt, time.Duration(a.cfg.JWT.ExpiryTime))
 
 	a.Router.Get("/", handler.IndexHandler)
-	a.Router.Get("/swagger/*", a.handlerForSwagger())
+	//a.Router.Get("/swagger/*", a.handlerForSwagger())
 	// Serve Swagger UI files statically
-	//a.Router.Handle("/docs/*", http.StripPrefix("/docs/", http.FileServer(http.Dir("docs"))))
-	//a.Router.Get("/swagger/*", httpSwagger.Handler(
-	//	httpSwagger.URL("/docs/swagger.yaml"),
-	//))
+	a.Router.Handle("/docs/*", http.StripPrefix("/docs/", http.FileServer(http.Dir("docs"))))
+	a.Router.Get("/swagger/*", httpSwagger.Handler(
+		httpSwagger.URL("/docs/swagger.yaml"),
+	))
 
 	userRepo := repository.NewUserRepository(a.DB)
 	userService := userservice.NewUserService(a.cfg, userRepo)
