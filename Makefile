@@ -11,7 +11,7 @@ generate:
 	swag init --ot go,yaml -d ./
 	swag fmt
 clean:
-	rm -rf ./bin
+	rm -rf ./functions
 all:
 	make clean
 	make generate
@@ -22,4 +22,5 @@ deploy:
 	make clean
 	go get ./...
 	go install ./...
+	make generate
 	make build_deploy
