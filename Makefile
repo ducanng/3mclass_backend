@@ -39,4 +39,3 @@ deploy:
 	go get gorm.io/gorm
 	go get gorm.io/gorm/logger
 	make build_deploy
-	make run
