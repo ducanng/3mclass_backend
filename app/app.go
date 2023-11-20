@@ -7,6 +7,7 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"sync"
 	"time"
@@ -158,15 +159,23 @@ func (a *App) InitializeRoutes() {
 	publicKey, privateKey := getJWTKey(a.cfg.JWT.PublicKey, a.cfg.JWT.PrivateKey)
 	jwt := jwtauth.New(string(jwa.RS256), privateKey, publicKey)
 	jwtHelper := helper.NewJWTHelper(*jwt, time.Duration(a.cfg.JWT.ExpiryTime))
-
+	baseHost := a.cfg.BaseHost
 	a.Router.Get("/", handler.IndexHandler)
 	//a.Router.Get("/swagger/*", a.handlerForSwagger())
 	// Serve Swagger UI files statically
-	a.Router.Handle("/docs/*", http.StripPrefix("/docs/", http.FileServer(http.Dir("docs"))))
-	a.Router.Get("/swagger/*", httpSwagger.Handler(
-		httpSwagger.URL("/docs/swagger.yaml"),
-	))
+	a.Router.Get("/swagger.yaml", func(w http.ResponseWriter, r *http.Request) {
+		content, err := ioutil.ReadFile("./docs/swagger.yaml")
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "application/yaml")
+		w.Write(content)
+	})
 
+	a.Router.Get("/swagger/*", httpSwagger.Handler(
+		httpSwagger.URL(baseHost+"/swagger.yaml"),
+	))
 	userRepo := repository.NewUserRepository(a.DB)
 	userService := userservice.NewUserService(a.cfg, userRepo)
 	a.authHandler = authhandler.NewAuthHandler(a.cfg, userService, jwtHelper)
