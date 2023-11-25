@@ -219,11 +219,3 @@ func getJWTKey(publicKeyStr, privateKeyStr string) (publicKey *rsa.PublicKey, pr
 	publicKey = genericPublicKeyInf.(*rsa.PublicKey)
 	return publicKey, privateKey
 }
-
-func (a *App) handlerForSwagger() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		// TODO: improve the flag with trusted ips in the future
-		httpSwagger.WrapHandler(w, r)
-		return
-	}
-}
