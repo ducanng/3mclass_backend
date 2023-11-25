@@ -21,6 +21,7 @@ type (
 		JWT               jwt               `mapstructure:"jwt"`
 		AccessTokenCookie accessTokenCookie `mapstructure:"access_token_cookie"`
 		SecretKey         string            `mapstructure:"secret_key"`
+		BaseHost          string            `mapstructure:"base_host"`
 	}
 	cors struct {
 		Enabled          bool     `mapstructure:"enabled"`

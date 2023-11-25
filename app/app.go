@@ -7,6 +7,7 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"sync"
 	"time"
@@ -55,6 +56,8 @@ func (a *App) InitializeApp() {
 	logger.Infof("Initializing DB conection...")
 	a.InitializeDBConn()
 	a.Router = chi.NewRouter()
+	a.Router.Use(middleware.RequestID)
+	a.Router.Use(middleware.RealIP)
 	a.Router.Use(middleware.Logger)
 	a.Router.Use(middleware.Recoverer)
 	a.InitializeRoutes()
@@ -156,15 +159,23 @@ func (a *App) InitializeRoutes() {
 	publicKey, privateKey := getJWTKey(a.cfg.JWT.PublicKey, a.cfg.JWT.PrivateKey)
 	jwt := jwtauth.New(string(jwa.RS256), privateKey, publicKey)
 	jwtHelper := helper.NewJWTHelper(*jwt, time.Duration(a.cfg.JWT.ExpiryTime))
-
+	baseHost := a.cfg.BaseHost
 	a.Router.Get("/", handler.IndexHandler)
-	a.Router.Get("/swagger/*", a.handlerForSwagger())
+	//a.Router.Get("/swagger/*", a.handlerForSwagger())
 	// Serve Swagger UI files statically
-	//a.Router.Handle("/docs/*", http.StripPrefix("/docs/", http.FileServer(http.Dir("docs"))))
-	//a.Router.Get("/swagger/*", httpSwagger.Handler(
-	//	httpSwagger.URL("/docs/swagger.yaml"),
-	//))
+	a.Router.Get("/swagger.yaml", func(w http.ResponseWriter, r *http.Request) {
+		content, err := ioutil.ReadFile("./docs/swagger.yaml")
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "application/yaml")
+		w.Write(content)
+	})
 
+	a.Router.Get("/swagger/*", httpSwagger.Handler(
+		httpSwagger.URL(baseHost+"/swagger.yaml"),
+	))
 	userRepo := repository.NewUserRepository(a.DB)
 	userService := userservice.NewUserService(a.cfg, userRepo)
 	a.authHandler = authhandler.NewAuthHandler(a.cfg, userService, jwtHelper)
@@ -207,12 +218,4 @@ func getJWTKey(publicKeyStr, privateKeyStr string) (publicKey *rsa.PublicKey, pr
 	}
 	publicKey = genericPublicKeyInf.(*rsa.PublicKey)
 	return publicKey, privateKey
-}
-
-func (a *App) handlerForSwagger() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		// TODO: improve the flag with trusted ips in the future
-		httpSwagger.WrapHandler(w, r)
-		return
-	}
 }

@@ -4,14 +4,14 @@ dep:
 build:
 	go build -v -o ./bin/main .
 build_deploy:
-	CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o ./bin/main .
+	CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o functions/main .
 run:
 	./bin/main
 generate:
 	swag init --ot go,yaml -d ./
 	swag fmt
 clean:
-	rm -rf ./bin
+	rm -rf ./functions
 all:
 	make clean
 	make generate
@@ -20,7 +20,6 @@ all:
 	make run
 deploy:
 	make clean
-	make generate
-	make dep
+	go get ./...
+	go install ./...
 	make build_deploy
-	make run
