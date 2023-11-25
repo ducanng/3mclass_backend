@@ -6,7 +6,7 @@ import (
 
 	"gorm.io/gorm"
 
-	"github.com/ducanng/no-name/internal/model/userdm"
+	"github.com/ducanng/3mclass_backend/internal/model/userdm"
 )
 
 type UserRepository interface {

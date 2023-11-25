@@ -24,15 +24,15 @@ import (
 	"gorm.io/gorm"
 	gormLogger "gorm.io/gorm/logger"
 
-	"github.com/ducanng/no-name/config"
-	"github.com/ducanng/no-name/handler"
-	"github.com/ducanng/no-name/handler/authhandler"
-	"github.com/ducanng/no-name/handler/userhandler"
-	"github.com/ducanng/no-name/helper"
-	"github.com/ducanng/no-name/internal/model/userdm"
-	"github.com/ducanng/no-name/internal/repository"
-	"github.com/ducanng/no-name/internal/service/userservice"
-	"github.com/ducanng/no-name/pkg/logutil"
+	"github.com/ducanng/3mclass_backend/config"
+	"github.com/ducanng/3mclass_backend/handler"
+	"github.com/ducanng/3mclass_backend/handler/authhandler"
+	"github.com/ducanng/3mclass_backend/handler/userhandler"
+	"github.com/ducanng/3mclass_backend/helper"
+	"github.com/ducanng/3mclass_backend/internal/model/userdm"
+	"github.com/ducanng/3mclass_backend/internal/repository"
+	"github.com/ducanng/3mclass_backend/internal/service/userservice"
+	"github.com/ducanng/3mclass_backend/pkg/logutil"
 )
 
 type App struct {
@@ -186,7 +186,7 @@ func (a *App) InitializeRoutes() {
 	})
 	a.Router.Group(func(r chi.Router) {
 		r.Use(jwtHelper.Verifier())
-		r.Use(jwtauth.Authenticator)
+		r.Use(jwtauth.Authenticator(jwt))
 		r.Route("/v1/public/u/user", func(r chi.Router) {
 			a.userHandler.Register(r)
 		})

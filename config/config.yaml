@@ -1,6 +1,5 @@
 http_port: 8080
-base_host: "https://noname-1-a7233347.deta.app" 
-#base_host: "http://localhost:8080"
+base_host: "http://localhost:8080"
 db_connection_string: "sql12662095:SJbBnDL1w7@tcp(sql12.freemysqlhosting.net:3306)/sql12662095?parseTime=true"
 gorm_debug: true
 db_auto_migrate: true

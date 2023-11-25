@@ -3,9 +3,9 @@ package main
 import (
 	"context"
 
-	"github.com/ducanng/no-name/app"
-	"github.com/ducanng/no-name/config"
-	"github.com/ducanng/no-name/pkg/logutil"
+	"github.com/ducanng/3mclass_backend/app"
+	"github.com/ducanng/3mclass_backend/config"
+	"github.com/ducanng/3mclass_backend/pkg/logutil"
 
 	_ "github.com/swaggo/http-swagger/example/go-chi/docs"
 )

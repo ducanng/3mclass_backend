@@ -5,7 +5,7 @@ import (
 
 	"github.com/go-chi/chi"
 
-	"github.com/ducanng/no-name/pkg/httputil"
+	"github.com/ducanng/3mclass_backend/pkg/httputil"
 )
 
 type Handler interface {

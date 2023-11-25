@@ -1,12 +1,12 @@
-module github.com/ducanng/no-name
+module github.com/ducanng/3mclass_backend
 
 go 1.19
 
 require (
 	github.com/go-chi/chi v4.1.2+incompatible
-	github.com/go-chi/jwtauth/v5 v5.1.1
+	github.com/go-chi/jwtauth/v5 v5.2.0
 	github.com/go-playground/validator/v10 v10.16.0
-	github.com/lestrrat-go/jwx/v2 v2.0.16
+	github.com/lestrrat-go/jwx/v2 v2.0.17
 	github.com/natefinch/lumberjack v2.0.0+incompatible
 	github.com/rogpeppe/go-internal v1.11.0
 	github.com/rs/cors v1.10.1

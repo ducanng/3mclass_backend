@@ -8,10 +8,10 @@ import (
 
 	"golang.org/x/crypto/bcrypt"
 
-	"github.com/ducanng/no-name/config"
-	"github.com/ducanng/no-name/internal/model/userdm"
-	"github.com/ducanng/no-name/internal/repository"
-	"github.com/ducanng/no-name/pkg/logutil"
+	"github.com/ducanng/3mclass_backend/config"
+	"github.com/ducanng/3mclass_backend/internal/model/userdm"
+	"github.com/ducanng/3mclass_backend/internal/repository"
+	"github.com/ducanng/3mclass_backend/pkg/logutil"
 )
 
 type UserService interface {

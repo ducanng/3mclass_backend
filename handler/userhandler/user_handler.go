@@ -9,12 +9,12 @@ import (
 	"github.com/go-chi/jwtauth/v5"
 	"github.com/go-playground/validator/v10"
 
-	"github.com/ducanng/no-name/config"
-	"github.com/ducanng/no-name/handler"
-	"github.com/ducanng/no-name/helper"
-	"github.com/ducanng/no-name/internal/service/userservice"
-	"github.com/ducanng/no-name/pkg/httputil"
-	"github.com/ducanng/no-name/pkg/logutil"
+	"github.com/ducanng/3mclass_backend/config"
+	"github.com/ducanng/3mclass_backend/handler"
+	"github.com/ducanng/3mclass_backend/helper"
+	"github.com/ducanng/3mclass_backend/internal/service/userservice"
+	"github.com/ducanng/3mclass_backend/pkg/httputil"
+	"github.com/ducanng/3mclass_backend/pkg/logutil"
 )
 
 type userHandler struct {

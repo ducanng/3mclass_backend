@@ -6,8 +6,8 @@ import (
 
 	"github.com/go-chi/jwtauth/v5"
 
-	"github.com/ducanng/no-name/config"
-	"github.com/ducanng/no-name/helper"
+	"github.com/ducanng/3mclass_backend/config"
+	"github.com/ducanng/3mclass_backend/helper"
 )
 
 type (
