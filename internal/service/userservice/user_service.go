@@ -50,7 +50,6 @@ func (s *userService) RegisterUser(ctx context.Context, req *UserRegistrationReq
 
 	userData, err = s.repo.CreateUser(ctx, &userdm.User{
 		UserEmail:    req.Email,
-		DisplayName:  fmt.Sprintf("%s %s", req.FirstName, req.LastName),
 		FirstName:    req.LastName,
 		LastName:     req.FirstName,
 		PhoneNumber:  req.PhoneNumber,
@@ -145,7 +144,6 @@ func (s *userService) GetUserInfo(ctx context.Context, userID uint64) (user *Use
 		LastName:    userData.LastName,
 		Email:       userData.UserEmail,
 		PhoneNumber: userData.PhoneNumber,
-		DisplayName: userData.DisplayName,
 	}
 	return user, nil
 }
@@ -181,7 +179,6 @@ func (s *userService) UpdateUserProfile(ctx context.Context, userID uint64, req 
 	if req.LastName != "" {
 		userData.LastName = req.LastName
 	}
-	userData.DisplayName = fmt.Sprintf("%s %s", userData.FirstName, userData.LastName)
 	if err = s.repo.UpdateUser(ctx, userData); err != nil {
 		logger.Errorf("error while updating user, err: %s", err.Error())
 		return err

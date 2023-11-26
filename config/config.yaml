@@ -1,11 +1,11 @@
 http_port: 8080
-base_host: "http://localhost:8080"
-db_connection_string: "sql12662095:SJbBnDL1w7@tcp(sql12.freemysqlhosting.net:3306)/sql12662095?parseTime=true"
+base_host: http://localhost:8080
+db_connection_string: postgres://postgres:password@127.0.0.1:5432/threemanclass
 gorm_debug: true
 db_auto_migrate: true
 cors:
   enabled: 1
-  origins: "http://localhost:8000"
+  origins: http://localhost:8000
   allowed_methods: GET,POST
   exposed_headers:
   allowed_headers:

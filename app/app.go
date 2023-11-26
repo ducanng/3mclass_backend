@@ -20,7 +20,7 @@ import (
 	"github.com/rs/cors"
 	_ "github.com/swaggo/http-swagger/example/go-chi/docs"
 	httpSwagger "github.com/swaggo/http-swagger/v2"
-	"gorm.io/driver/mysql"
+	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	gormLogger "gorm.io/gorm/logger"
 
@@ -29,6 +29,9 @@ import (
 	"github.com/ducanng/3mclass_backend/handler/authhandler"
 	"github.com/ducanng/3mclass_backend/handler/userhandler"
 	"github.com/ducanng/3mclass_backend/helper"
+	"github.com/ducanng/3mclass_backend/internal/model/assignmentdm"
+	"github.com/ducanng/3mclass_backend/internal/model/classdm"
+	"github.com/ducanng/3mclass_backend/internal/model/gradedm"
 	"github.com/ducanng/3mclass_backend/internal/model/userdm"
 	"github.com/ducanng/3mclass_backend/internal/repository"
 	"github.com/ducanng/3mclass_backend/internal/service/userservice"
@@ -65,7 +68,7 @@ func (a *App) InitializeApp() {
 
 func (a *App) InitializeDBConn() {
 	logger := logutil.GetLogger()
-	db, err := gorm.Open(mysql.Open(a.cfg.DSN), &gorm.Config{
+	db, err := gorm.Open(postgres.Open(a.cfg.DSN), &gorm.Config{
 		Logger: gormLogger.Default.LogMode(gormLogger.Error),
 	})
 	if err != nil {
@@ -81,7 +84,16 @@ func (a *App) InitializeDBConn() {
 }
 
 func (a *App) MigrateDB() {
-	a.DB.AutoMigrate(userdm.User{})
+	a.DB.AutoMigrate(
+		userdm.User{},
+		userdm.Student{},
+		classdm.Class{},
+		classdm.ClassMember{},
+		classdm.ClassInvitation{},
+		gradedm.Grade{},
+		gradedm.GradeStructure{},
+		assignmentdm.Assignment{},
+	)
 }
 
 func (a *App) Run(ctx context.Context) (err error) {
@@ -161,8 +173,6 @@ func (a *App) InitializeRoutes() {
 	jwtHelper := helper.NewJWTHelper(*jwt, time.Duration(a.cfg.JWT.ExpiryTime))
 	baseHost := a.cfg.BaseHost
 	a.Router.Get("/", handler.IndexHandler)
-	//a.Router.Get("/swagger/*", a.handlerForSwagger())
-	// Serve Swagger UI files statically
 	a.Router.Get("/swagger.yaml", func(w http.ResponseWriter, r *http.Request) {
 		content, err := ioutil.ReadFile("./docs/swagger.yaml")
 		if err != nil {

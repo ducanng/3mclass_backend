@@ -60,8 +60,6 @@ definitions:
     type: object
   userhandler.UserProfile:
     properties:
-      display_name:
-        type: string
       email:
         type: string
       first_name:

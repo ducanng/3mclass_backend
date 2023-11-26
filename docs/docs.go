@@ -317,9 +317,6 @@ const docTemplate = `{
         "userhandler.UserProfile": {
             "type": "object",
             "properties": {
-                "display_name": {
-                    "type": "string"
-                },
                 "email": {
                     "type": "string"
                 },

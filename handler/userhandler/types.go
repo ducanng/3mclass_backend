@@ -7,7 +7,6 @@ type (
 		PhoneNumber string `json:"phone"`
 		FirstName   string `json:"first_name"`
 		LastName    string `json:"last_name"`
-		DisplayName string `json:"display_name"`
 	}
 
 	UpdateUserProfileRequest struct {

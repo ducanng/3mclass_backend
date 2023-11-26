@@ -11,7 +11,6 @@ import (
 
 type UserRepository interface {
 	CreateUser(ctx context.Context, user *userdm.User) (*userdm.User, error)
-	CreateUserCredential(ctx context.Context, userCredential *userdm.UserCredential) (*userdm.UserCredential, error)
 	GetExistingUserByID(ctx context.Context, userID uint64) (user *userdm.User, isFound bool, err error)
 	GetExistingUserByEmail(ctx context.Context, email string) (*userdm.User, bool, error)
 	UpdateUser(ctx context.Context, data *userdm.User) error
@@ -30,11 +29,6 @@ func NewUserRepository(db *gorm.DB) UserRepository {
 func (u *userRepository) CreateUser(ctx context.Context, user *userdm.User) (*userdm.User, error) {
 	err := u.DB.WithContext(ctx).Create(&user).Error
 	return user, err
-}
-
-func (u *userRepository) CreateUserCredential(ctx context.Context, userCredential *userdm.UserCredential) (*userdm.UserCredential, error) {
-	err := u.DB.WithContext(ctx).Create(&userCredential).Error
-	return userCredential, err
 }
 
 func (u *userRepository) GetExistingUserByID(ctx context.Context, userID uint64) (user *userdm.User, isFound bool, err error) {

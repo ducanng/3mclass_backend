@@ -133,7 +133,6 @@ func (h *userHandler) userProfile(w http.ResponseWriter, r *http.Request) {
 		PhoneNumber: userProfile.PhoneNumber,
 		FirstName:   userProfile.FirstName,
 		LastName:    userProfile.LastName,
-		DisplayName: userProfile.DisplayName,
 	})
 }
 
