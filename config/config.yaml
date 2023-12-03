@@ -21,3 +21,7 @@ access_token_cookie:
   cookie_name: jwt
   previous_domain:
 secret_key: keynaykhongcoaibiethetne
+oauth:
+  google_url: http://localhost:8080/v1/public/auth/oauth/google
+  google_client_id: 366801791823-ebc4shquh2srn84dgo2doifvhsbob3e1.apps.googleusercontent.com
+  google_client_secret: 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

@@ -22,6 +22,7 @@ type (
 		AccessTokenCookie accessTokenCookie `mapstructure:"access_token_cookie"`
 		SecretKey         string            `mapstructure:"secret_key"`
 		BaseHost          string            `mapstructure:"base_host"`
+		OAuth             oauth             `mapstructure:"oauth"`
 	}
 	cors struct {
 		Enabled          bool     `mapstructure:"enabled"`
@@ -42,6 +43,11 @@ type (
 		Domain         string `mapstructure:"domain"`
 		CookieName     string `mapstructure:"cookie_name"`
 		PreviousDomain string `mapstructure:"previous_domain"`
+	}
+	oauth struct {
+		GoogleURL          string `mapstructure:"google_url"`
+		GoogleClientID     string `mapstructure:"google_client_id"`
+		GoogleClientSecret string `mapstructure:"google_client_secret"`
 	}
 )
 
