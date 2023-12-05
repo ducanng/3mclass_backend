@@ -244,31 +244,31 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "email",
-                "first_name",
-                "last_name",
+                "firstName",
+                "lastName",
                 "password",
-                "phone_number",
-                "re_password"
+                "phoneNumber",
+                "rePassword"
             ],
             "properties": {
                 "email": {
                     "type": "string"
                 },
-                "first_name": {
+                "firstName": {
                     "type": "string"
                 },
-                "last_name": {
+                "lastName": {
                     "type": "string"
                 },
                 "password": {
                     "type": "string"
                 },
-                "phone_number": {
+                "phoneNumber": {
                     "type": "string",
                     "maxLength": 12,
                     "minLength": 9
                 },
-                "re_password": {
+                "rePassword": {
                     "type": "string"
                 }
             }
@@ -283,10 +283,10 @@ const docTemplate = `{
                     "description": "WaitingResendOTPSeconds uint64 ` + "`" + `json:\"waiting_resend_otp_seconds\"` + "`" + `",
                     "type": "string"
                 },
-                "next_action": {
+                "nextAction": {
                     "type": "string"
                 },
-                "phone_number": {
+                "phoneNumber": {
                     "type": "string"
                 },
                 "session": {
@@ -303,13 +303,13 @@ const docTemplate = `{
                 "email": {
                     "type": "string"
                 },
-                "first_name": {
+                "firstName": {
                     "type": "string"
                 },
-                "last_name": {
+                "lastName": {
                     "type": "string"
                 },
-                "phone_number": {
+                "phoneNumber": {
                     "type": "string"
                 }
             }
@@ -320,16 +320,16 @@ const docTemplate = `{
                 "email": {
                     "type": "string"
                 },
-                "first_name": {
+                "firstName": {
                     "type": "string"
                 },
-                "last_name": {
+                "lastLame": {
                     "type": "string"
                 },
-                "phone": {
+                "phoneNumber": {
                     "type": "string"
                 },
-                "user_id": {
+                "userID": {
                     "type": "integer"
                 }
             }
