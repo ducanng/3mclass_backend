@@ -34,11 +34,14 @@ func NewAuthHandler(cfg *config.Config, service userservice.UserService, jwtHelp
 	}
 }
 
-func (a *authHandler) Register(r chi.Router) {
-	r.Post("/registration", a.userRegistration)
-	r.Post("/login", a.userLogin)
-	r.Get("/refresh_token", a.refreshToken)
-	r.Post("/verify_otp", a.verifyOTP)
+func (h *authHandler) Register(r chi.Router) {
+	r.Post("/registration", h.userRegistration)
+	r.Post("/login", h.userLogin)
+	r.Get("/refresh_token", h.refreshToken)
+	r.Post("/verify_otp", h.verifyOTP)
+
+	r.Post("/login_google", h.loginGoogle)
+	r.Get("/callback/google", h.googleCallback)
 }
 
 // userRegistration godoc
@@ -51,7 +54,7 @@ func (a *authHandler) Register(r chi.Router) {
 //	@Param			UserRegistrationRequest	body		UserRegistrationRequest	true	"Request"
 //	@Success		200						{object}	UserRegistrationResponse
 //	@Router			/v1/public/auth/registration [post]
-func (a *authHandler) userRegistration(w http.ResponseWriter, r *http.Request) {
+func (h *authHandler) userRegistration(w http.ResponseWriter, r *http.Request) {
 	var (
 		logger = logutil.GetLogger()
 		req    UserRegistrationRequest
@@ -63,7 +66,7 @@ func (a *authHandler) userRegistration(w http.ResponseWriter, r *http.Request) {
 		httputil.WriteJSONMessage(w, http.StatusBadRequest, err.Error())
 		return
 	}
-	err = a.validate.Struct(&req)
+	err = h.validate.Struct(&req)
 	if err != nil {
 		logger.Errorf("Failed to validate request, err=%s", err.Error())
 		httputil.WriteJSONMessage(w, http.StatusBadRequest, err.Error())
@@ -80,7 +83,7 @@ func (a *authHandler) userRegistration(w http.ResponseWriter, r *http.Request) {
 	//}
 	//parsedPhoneNumber := fmt.Sprintf("%d%d", *phoneNumber.CountryCode, *phoneNumber.NationalNumber)
 
-	respRegistration, err := a.UserService.RegisterUser(r.Context(), &userservice.UserRegistrationRequest{
+	respRegistration, err := h.UserService.RegisterUser(r.Context(), &userservice.UserRegistrationRequest{
 		Email:       req.Email,
 		PhoneNumber: req.PhoneNumber,
 		FirstName:   req.FirstName,
@@ -115,43 +118,43 @@ func (a *authHandler) userRegistration(w http.ResponseWriter, r *http.Request) {
 //	@Success		200					{string}	string				"Login ok!"
 //
 //	@Router			/v1/public/auth/login [post]
-func (a *authHandler) userLogin(w http.ResponseWriter, r *http.Request) {
+func (h *authHandler) userLogin(w http.ResponseWriter, r *http.Request) {
 	var (
 		loginReq UserLoginRequest
 	)
 	err := json.NewDecoder(r.Body).Decode(&loginReq)
 	if err != nil {
-		deleteAccessToken(w, a.cfg.AccessTokenCookie.Domain)
+		deleteAccessToken(w, h.cfg.AccessTokenCookie.Domain)
 		deleteAccessToken(w, "")
 		httputil.WriteJSONMessage(w, http.StatusBadRequest, err.Error())
 		return
 	}
 
-	err = a.validate.Struct(loginReq)
+	err = h.validate.Struct(loginReq)
 	if err != nil {
-		deleteAccessToken(w, a.cfg.AccessTokenCookie.Domain)
+		deleteAccessToken(w, h.cfg.AccessTokenCookie.Domain)
 		deleteAccessToken(w, "")
 		httputil.WriteJSONMessage(w, http.StatusBadRequest, err.Error())
 		return
 	}
 
-	userInfo, err := a.UserService.UserLogin(r.Context(), userservice.UserLogin{
+	userInfo, err := h.UserService.UserLogin(r.Context(), userservice.UserLogin{
 		Email:    strings.ToLower(strings.TrimSpace(loginReq.Email)),
 		Password: loginReq.Password,
 	})
 	if err != nil {
-		deleteAccessToken(w, a.cfg.AccessTokenCookie.Domain)
+		deleteAccessToken(w, h.cfg.AccessTokenCookie.Domain)
 		deleteAccessToken(w, "")
 		httputil.WriteJSONMessage(w, http.StatusBadRequest, err.Error())
 		return
 	}
 
 	// write to cookie
-	token, err := a.jwtHelper.IssueToken(r.Context(), map[string]interface{}{
+	token, err := h.jwtHelper.IssueToken(r.Context(), map[string]interface{}{
 		"user_id": userInfo.UserID,
 	})
 	if err != nil {
-		deleteAccessToken(w, a.cfg.AccessTokenCookie.Domain)
+		deleteAccessToken(w, h.cfg.AccessTokenCookie.Domain)
 		deleteAccessToken(w, "")
 		httputil.WriteJSONMessage(w, http.StatusBadRequest, err.Error())
 		return
@@ -159,13 +162,13 @@ func (a *authHandler) userLogin(w http.ResponseWriter, r *http.Request) {
 	var (
 		expireAt = time.Now().Add(time.Hour * 24 * 365)
 	)
-	if a.cfg.JWT.ExpiryTime > 0 {
-		expireAt = time.Now().Add(time.Second * time.Duration(a.cfg.JWT.ExpiryTime))
+	if h.cfg.JWT.ExpiryTime > 0 {
+		expireAt = time.Now().Add(time.Second * time.Duration(h.cfg.JWT.ExpiryTime))
 	}
-	var domain = a.cfg.AccessTokenCookie.Domain
+	var domain = h.cfg.AccessTokenCookie.Domain
 	w.Header().Set("Authorization", "BEARER"+token)
 	http.SetCookie(w, &http.Cookie{
-		Name:     a.cfg.AccessTokenCookie.CookieName,
+		Name:     h.cfg.AccessTokenCookie.CookieName,
 		Value:    token,
 		HttpOnly: true,
 		Path:     "/",
@@ -226,7 +229,7 @@ func deleteAccessToken(w http.ResponseWriter, domain string) {
 //	@Success		200					{string}	string				"Ok!"
 //
 //	@Router			/v1/public/auth/refresh_token [get]
-func (a *authHandler) refreshToken(w http.ResponseWriter, r *http.Request) {
+func (h *authHandler) refreshToken(w http.ResponseWriter, r *http.Request) {
 	httputil.WriteJSONMessage(w, http.StatusNotImplemented, "Login ok!")
 }
 
@@ -242,6 +245,14 @@ func (a *authHandler) refreshToken(w http.ResponseWriter, r *http.Request) {
 //	@Success		200					{string}	string				"Ok!"
 //
 //	@Router			/v1/public/auth/verify_otp [post]
-func (a *authHandler) verifyOTP(w http.ResponseWriter, r *http.Request) {
+func (h *authHandler) verifyOTP(w http.ResponseWriter, r *http.Request) {
 	httputil.WriteJSONMessage(w, http.StatusNotImplemented, "Ok!")
+}
+
+func (h *authHandler) loginGoogle(w http.ResponseWriter, r *http.Request) {
+
+}
+
+func (h *authHandler) googleCallback(w http.ResponseWriter, r *http.Request) {
+
 }
