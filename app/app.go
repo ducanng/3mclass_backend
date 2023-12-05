@@ -68,7 +68,11 @@ func (a *App) InitializeApp() {
 
 func (a *App) InitializeDBConn() {
 	logger := logutil.GetLogger()
-	db, err := gorm.Open(postgres.Open(a.cfg.DSN), &gorm.Config{
+	dsn := a.cfg.DSN
+	if a.cfg.IsProduction {
+		dsn = a.cfg.Deployment.DSN
+	}
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
 		Logger: gormLogger.Default.LogMode(gormLogger.Error),
 	})
 	if err != nil {
@@ -134,21 +138,24 @@ func (a *App) InitializeServer() *http.Server {
 		addr                = fmt.Sprintf(":%s", a.cfg.HTTPPort)
 		router http.Handler = a.Router
 	)
-
-	if a.cfg.CORS.Enabled {
+	c := a.cfg.CORS
+	if a.cfg.IsProduction {
+		c = a.cfg.Deployment.CORS
+	}
+	if c.Enabled {
 		opts := cors.Options{
-			AllowedOrigins:   a.cfg.CORS.Origins,
-			AllowedMethods:   a.cfg.CORS.AllowedMethods,
-			Debug:            a.cfg.CORS.Debug,
-			AllowCredentials: a.cfg.CORS.AllowCredentials,
+			AllowedOrigins:   c.Origins,
+			AllowedMethods:   c.AllowedMethods,
+			Debug:            c.Debug,
+			AllowCredentials: c.AllowCredentials,
 		}
 
 		if len(a.cfg.CORS.ExposedHeaders) != 0 {
-			opts.ExposedHeaders = a.cfg.CORS.ExposedHeaders
+			opts.ExposedHeaders = c.ExposedHeaders
 		}
 
 		if len(a.cfg.CORS.AllowedHeaders) != 0 {
-			opts.AllowedHeaders = a.cfg.CORS.AllowedHeaders
+			opts.AllowedHeaders = c.AllowedHeaders
 		}
 		c := cors.New(opts)
 		router = c.Handler(a.Router)
@@ -172,6 +179,9 @@ func (a *App) InitializeRoutes() {
 	jwt := jwtauth.New(string(jwa.RS256), privateKey, publicKey)
 	jwtHelper := helper.NewJWTHelper(*jwt, time.Duration(a.cfg.JWT.ExpiryTime))
 	baseHost := a.cfg.BaseHost
+	if a.cfg.IsProduction {
+		baseHost = a.cfg.Deployment.BaseHost
+	}
 	a.Router.Get("/", handler.IndexHandler)
 	a.Router.Get("/swagger.yaml", func(w http.ResponseWriter, r *http.Request) {
 		content, err := ioutil.ReadFile("./docs/swagger.yaml")

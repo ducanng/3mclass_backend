@@ -1,3 +1,4 @@
+is_production: 0
 http_port: 8080
 base_host: http://localhost:8080
 db_connection_string: postgres://postgres:password@127.0.0.1:5432/threemanclass
@@ -25,3 +26,18 @@ oauth:
   google_url: http://localhost:8080/v1/public/auth/oauth/google
   google_client_id: 366801791823-ebc4shquh2srn84dgo2doifvhsbob3e1.apps.googleusercontent.com
   google_client_secret: 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
+deployment:
+  base_host: https://threemclass.onrender.com
+  oauth:
+    google_url: https://threemclass.onrender.com/v1/public/auth/oauth/google
+    google_client_id: 366801791823-ebc4shquh2srn84dgo2doifvhsbob3e1.apps.googleusercontent.com
+    google_client_secret: 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
+  db_connection_string: postgres://postgres:password@127.0.0.1:5432/threemanclass
+  cors:
+    enabled: 1
+    origins: https://threemclass.onrender.com
+    allowed_methods: GET,POST
+    exposed_headers:
+    allowed_headers:
+    debug: 0
+    allow_credentials: 0

@@ -13,6 +13,7 @@ var defaultConfig []byte
 
 type (
 	Config struct {
+		IsProduction      bool              `mapstructure:"is_production"`
 		HTTPPort          string            `mapstructure:"http_port"`
 		DSN               string            `mapstructure:"db_connection_string"`
 		CORS              cors              `mapstructure:"cors"`
@@ -23,6 +24,13 @@ type (
 		SecretKey         string            `mapstructure:"secret_key"`
 		BaseHost          string            `mapstructure:"base_host"`
 		OAuth             oauth             `mapstructure:"oauth"`
+		Deployment        deploymentConfig  `mapstructure:"deployment"`
+	}
+	deploymentConfig struct {
+		BaseHost string `mapstructure:"base_host"`
+		OAuth    oauth  `mapstructure:"oauth"`
+		CORS     cors   `mapstructure:"cors"`
+		DSN      string `mapstructure:"db_connection_string"`
 	}
 	cors struct {
 		Enabled          bool     `mapstructure:"enabled"`
