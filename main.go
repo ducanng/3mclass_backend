@@ -10,7 +10,7 @@ import (
 	_ "github.com/swaggo/http-swagger/example/go-chi/docs"
 )
 
-//	@title		NoName API
+//	@title		Threeman class API
 //	@version	1.0
 //	@description
 //	@termsOfService	http://swagger.io/terms/
@@ -18,7 +18,7 @@ import (
 //	@contact.email
 //	@license.name	Apache 2.0
 //	@license.url	http://www.apache.org/licenses/LICENSE-2.0.html
-//	@host			localhost:8080
+//	@host			threemclass.onrender.com localhost:8080
 //	@schemes		http https
 
 //	@securityDefinitions.apikey	BearerAuth

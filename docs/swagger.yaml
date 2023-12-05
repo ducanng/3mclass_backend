@@ -71,7 +71,7 @@ definitions:
       userID:
         type: integer
     type: object
-host: localhost:8080
+host: threemclass.onrender.com localhost:8080
 info:
   contact:
     name: API Support
@@ -79,7 +79,7 @@ info:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   termsOfService: http://swagger.io/terms/
-  title: NoName API
+  title: Threeman class API
   version: "1.0"
 paths:
   /v1/public/auth/login:
