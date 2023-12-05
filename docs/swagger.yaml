@@ -71,7 +71,7 @@ definitions:
       userID:
         type: integer
     type: object
-host: threemclass.onrender.com localhost:8080
+host: threemclass.onrender.com
 info:
   contact:
     name: API Support

@@ -18,7 +18,7 @@ import (
 //	@contact.email
 //	@license.name	Apache 2.0
 //	@license.url	http://www.apache.org/licenses/LICENSE-2.0.html
-//	@host			threemclass.onrender.com localhost:8080
+//	@host			threemclass.onrender.com
 //	@schemes		http https
 
 //	@securityDefinitions.apikey	BearerAuth
